@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💖</title>
+
+<style>
+body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: monospace;
+}
+
+/* START SCREEN */
+#startScreen {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: black;
+    color: white;
+    z-index: 10;
+    transition: opacity 1.5s ease;
+}
+
+.heart-btn {
+    font-size: 90px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    animation: pulse 1.5s infinite;
+    text-shadow: 0 0 25px pink;
+}
+
+.heart-text {
+    margin-top: 20px;
+    font-size: 20px;
+    letter-spacing: 3px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+/* MOSAIC GRID */
+.mosaic {
+    width: 100vw;
+    height: 100vh;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: hidden;
+
+    font-family: monospace;
+    font-size: 10px;
+    line-height: 10px;
+    letter-spacing: 0;
+
+    background-image: url("./img/beh1.jpg");
+    background-size: cover;
+    background-position: center;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    filter: contrast(1.4) brightness(1.2); /* enhance B&W */
+
+    display: none;
+}
+
+
+
+
+
+
+/* Floating Hearts */
+.heart {
+    position: fixed;   /* FIXED instead of absolute */
+    color: pink;
+    animation: floatUp linear infinite;
+    opacity: 0.8;
+    pointer-events: none; /* so clicks pass through hearts */
+}
+
+
+@keyframes floatUp {
+    from {
+        transform: translateY(100vh) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+    <button class="heart-btn">❤️</button>
+    <div class="heart-text">CLICK ME</div>
+</div>
+
+<!-- MOSAIC -->
+<div class="mosaic" id="mosaic"></div>
+
+<!-- MUSIC -->
+<audio id="bgMusic" preload="auto" loop>
+    <source src="./music/paraluman.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const text = `HENLO BEH, TODAY IS THE DAY OF LOVE AND TODAY IS OUR LOVE LOVE HAHAHA ANU DAW. EVERYDAY NAMAN TAYO NAGMAMAHALAN. GUSTO KO LANG MALAMAN MO NA MAHAL NA MAHAL KITA SINCE DAY 1 HANGGANG NGAYON AT SA SUSUNOD PANG PANAHON. SALAMAT SA ARAW ARAW NA PAGINTINDI SA UGALI KO KAHIT NA MINSAN NAGKAKARON TAYO NG HINDI PAGUUNAWAAN PERO PINIPILI MO PARIN AKONG INTINDIHIN KAHIT NAPAKAPANGIT NG UGALI KO. THANK YOU DIN BEH DAHIL HINDI KA TUMITIGIL NA PALAKASIN ANG LOOB KO SA TUWING STRESS NA STRESS NAKO SA BUHAY DAHIL SA MGA PROBLEMANG HINAHARAP NATIN, THANK YOU DIN BEH DAHIL KAHIT ZERO DAYS ANJAN KAPA DIN SA TABI KO. BASTA BEH PANGAKO YAN BEH, SA MGA SUSUNOD NA PANAHON HINDI NA TAYO MAGIGING ZERO MAKAKARAOS DIN TAYO JAN. WISH KO SATIN MAGMAHALAN PA TAYO NG MARAMING PANAHON, MAGKARON MAN TAYO NG HINDI PAGKAKAUNAWAAN, AAYUSIN AT AAYUSUN PADIN NATIN YON. YUN LANG BEH WISH KO SAYO MAGKARON KA LAGE NG LAKAS NG KATAWAN SA ARAW ARAW AT ALAM KO NAMAN NA HINDI KA PAPABAYAAN NI LORD. I LOVE YOU SO MUCH BEBEH KO, HAPPY VALENTINES`;
+// 🔥 REMOVE ALL SPACES
+const cleanText = text.replace(/\s+/g, "");
+
+const repeatCount = 2500;
+
+let fullText = "";
+for (let i = 0; i < repeatCount; i++) {
+    fullText += cleanText;
+}
+
+const mosaic = document.getElementById("mosaic");
+const startScreen = document.getElementById("startScreen");
+const music = document.getElementById("bgMusic");
+
+// Floating Hearts
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💗";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (15 + Math.random() * 25) + "px";
+    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+    heart.style.bottom = "0";   // start from bottom
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 8000);
+}
+
+
+function startHearts() {
+    setInterval(createHeart, 300);
+}
+
+// Slow typing effect
+function typeMosaicSlow() {
+    let index = 0;
+    const chunkSize = 80;
+
+    const interval = setInterval(() => {
+        mosaic.innerText += fullText.slice(index, index + chunkSize);
+        index += chunkSize;
+
+        // STOP when content height exceeds container
+        if (mosaic.scrollHeight > mosaic.clientHeight) {
+            clearInterval(interval);
+        }
+
+        if (index >= fullText.length) {
+            clearInterval(interval);
+        }
+    }, 50);
+}
+
+
+// Start everything on click
+startScreen.addEventListener("click", () => {
+    startScreen.style.opacity = "0";
+
+    setTimeout(() => {
+        startScreen.style.display = "none";
+        mosaic.style.display = "block";
+
+        music.play();
+        typeMosaicSlow()
+        startHearts();
+    }, 1500);
+});
+</script>
+
+</body>
+</html>
