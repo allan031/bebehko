@@ -63,7 +63,7 @@ body {
     line-height: 10px;
     letter-spacing: 0;
 
-    background-image: url("./img/beh1.jpg");
+    background-image: url("./img/beh.jpg");
     background-size: cover;
     background-position: center;
 
@@ -157,22 +157,29 @@ function startHearts() {
 // Slow typing effect
 function typeMosaicSlow() {
     let index = 0;
-    const chunkSize = 80;
+    const chunkSize = 5;        // smaller = slower typing
+    const typingSpeed = 120;      // higher = slower (ms)
+
+    mosaic.innerText = ""; // clear first
 
     const interval = setInterval(() => {
         mosaic.innerText += fullText.slice(index, index + chunkSize);
         index += chunkSize;
 
-        // STOP when content height exceeds container
+        // Stop if filled the screen
         if (mosaic.scrollHeight > mosaic.clientHeight) {
             clearInterval(interval);
+            return;
         }
 
+        // Stop if text ends
         if (index >= fullText.length) {
             clearInterval(interval);
         }
-    }, 50);
+
+    }, typingSpeed);
 }
+
 
 
 // Start everything on click
@@ -184,7 +191,10 @@ startScreen.addEventListener("click", () => {
         mosaic.style.display = "block";
 
         music.play();
-        typeMosaicSlow()
+
+        setTimeout(() => {
+            typeMosaicSlow();
+        }, 1000); // typing starts 1 sec after music
         startHearts();
     }, 1500);
 });
